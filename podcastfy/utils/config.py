@@ -127,14 +127,13 @@ def main() -> None:
 	
 	# Test each configuration value
 	print("Testing Config class:")
-	print(f"JINA_API_KEY: {'Set' if config.JINA_API_KEY else 'Not set'}")
-	print(f"GEMINI_API_KEY: {'Set' if config.GEMINI_API_KEY else 'Not set'}")
 	print(f"OPENAI_API_KEY: {'Set' if config.OPENAI_API_KEY else 'Not set'}")
+	print(f"GEMINI_API_KEY: {'Set' if config.GEMINI_API_KEY else 'Not set'}")
 	print(f"ELEVENLABS_API_KEY: {'Set' if config.ELEVENLABS_API_KEY else 'Not set'}")
 
 	# Print a warning for any missing configuration
 	missing_config = []
-	for key in ['JINA_API_KEY', 'GEMINI_API_KEY', 'OPENAI_API_KEY', 'ELEVENLABS_API_KEY']:
+	for key in ['OPENAI_API_KEY', 'GEMINI_API_KEY', 'ELEVENLABS_API_KEY']:
 		if not getattr(config, key):
 			missing_config.append(key)
 

@@ -18,6 +18,7 @@ from .tts.factory import TTSProviderFactory
 from .utils.config import load_config
 from .utils.config_conversation import load_conversation_config
 
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -87,12 +88,16 @@ class TextToSpeech:
         Raises:
             ValueError: If the input text is not properly formatted
         """
+        logger.debug(f"Starting convert_to_speech with output file: {output_file}")
+        logger.debug(f"Input text length: {len(text)} characters")
+
         # Validate transcript format
         # self._validate_transcript_format(text)
 
         cleaned_text = text
 
         try:
+            logger.debug(f"Using provider model: {self.provider.model}")
 
             if (
                 "multi" in self.provider.model.lower()
@@ -101,6 +106,9 @@ class TextToSpeech:
                 voice = provider_config.get("default_voices", {}).get("question")
                 voice2 = provider_config.get("default_voices", {}).get("answer")
                 model = provider_config.get("model")
+                logger.debug(f"Provider config: {provider_config}")
+                
+                logger.debug("Generating audio with multi-speaker provider")
                 audio_data_list = self.provider.generate_audio(
                     cleaned_text,
                     voice="S",
@@ -118,38 +126,39 @@ class TextToSpeech:
                     combined = AudioSegment.empty()
                     
                     for i, chunk in enumerate(audio_data_list):
-                        # Save chunk to temporary file
-                        #temp_file = "./tmp.mp3"
-                        #with open(temp_file, "wb") as f:
-                        #    f.write(chunk)
-                        
+                        logger.debug(f"Processing chunk {i}, size: {len(chunk)} bytes")
                         segment = AudioSegment.from_file(io.BytesIO(chunk))
-                        logger.info(f"################### Loaded chunk {i}, duration: {len(segment)}ms")
+                        logger.debug(f"Loaded chunk {i}, duration: {len(segment)}ms")
                         
                         combined += segment
                     
                     # Export with high quality settings
                     os.makedirs(os.path.dirname(output_file), exist_ok=True)
+                    logger.debug(f"Exporting combined audio to {output_file}")
                     combined.export(
                         output_file, 
                         format=self.audio_format,
                         codec="libmp3lame",
                         bitrate="320k"
                     )
+                    logger.info(f"Successfully exported audio to {output_file}")
                     
                 except Exception as e:
-                    logger.error(f"Error during audio processing: {str(e)}")
+                    logger.error(f"Error during audio processing: {str(e)}", exc_info=True)
                     raise
             else:
+                logger.debug("Using single-speaker provider")
                 with tempfile.TemporaryDirectory(dir=self.temp_audio_dir) as temp_dir:
+                    logger.debug(f"Created temporary directory: {temp_dir}")
                     audio_segments = self._generate_audio_segments(
                         cleaned_text, temp_dir
                     )
+                    logger.debug(f"Generated {len(audio_segments)} audio segments")
                     self._merge_audio_files(audio_segments, output_file)
                     logger.info(f"Audio saved to {output_file}")
 
         except Exception as e:
-            logger.error(f"Error converting text to speech: {str(e)}")
+            logger.error(f"Error converting text to speech: {str(e)}", exc_info=True)
             raise
 
     def _generate_audio_segments(self, text: str, temp_dir: str) -> List[str]:

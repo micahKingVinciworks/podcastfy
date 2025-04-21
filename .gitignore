@@ -15,6 +15,7 @@ local_*.ipynb
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
 
 # Virtual environment
 venv/
@@ -39,6 +40,7 @@ attachments/
 
 # Temporary files
 *.tmp
+*.temp
 
 # Compiled Python files
 *.pyc
@@ -117,7 +119,17 @@ poetry.lock
 .venv/
 dist/
 
-# Python
-*.pyc
-__pycache__/
-*.egg-info/
+# Environment files
+keys.env
+.env
+
+# Configuration files with sensitive data
+config.yaml
+config.py
+
+# Output directories
+output/
+temp/
+*.mp3
+*.wav
+*.ogg

@@ -1,0 +1,17 @@
+# API Keys
+openai_api_key: ""  # Add your OpenAI API key here
+anthropic_api_key: ""  # Add your Anthropic API key here
+google_api_key: ""  # Add your Google API key here
+elevenlabs_api_key: ""  # Add your ElevenLabs API key here
+
+# Model Settings
+default_model: "gpt-4"  # Default model to use
+fallback_model: "gpt-3.5-turbo"  # Fallback model if primary fails
+
+# Output Settings
+output_directory: "output"
+temp_directory: "temp"
+
+# Content Settings
+max_tokens: 2000
+temperature: 0.7 
